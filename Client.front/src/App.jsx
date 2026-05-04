@@ -6,7 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import Home from "./pages/home/Home";
-import Login from "./pages/login/Login";
+import Login from "./pages/Login/Login";
 import Medicos from "./pages/medicos/Medicos";
 import Pacientes from "./pages/pacientes/Pacientes";
 import Atendimentos from "./pages/atendimento/Atendimentos";

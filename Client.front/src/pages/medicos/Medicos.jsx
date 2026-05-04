@@ -18,6 +18,7 @@ function Medicos() {
     crm: "",
     especialidade: "",
     salario: "",
+    senha: "",
   });
 
   useEffect(() => {
@@ -223,6 +224,21 @@ function Medicos() {
                     setNovoMedico({ ...novoMedico, salario: e.target.value })
                   }
                 />
+                <input
+                type="password"
+                placeholder="Senha"
+                value={novoMedico.senha || ""}
+                onChange={(e)=>
+                  setNovoMedico({...novoMedico, senha: e.target.value })
+                }
+                  required
+                />
+
+              {/*}  <input
+                type="password"
+                placeholder="Confirmar Senha"
+                />*/}
+                
               </div>
 
               <div className="buttons">
@@ -264,5 +280,6 @@ function Medicos() {
     </div>
   );
 }
+
 
 export default Medicos;

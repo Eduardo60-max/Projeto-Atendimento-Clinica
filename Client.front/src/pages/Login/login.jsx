@@ -24,55 +24,55 @@ export default function Login({ setLogado }) {
     setHasError(false);
   };
 
-  // const handleSubmit = async () => {
-  //   setErro("");
-  //   setHasError(false);
+  const handleSubmit = async () => {
+    setErro("");
+    setHasError(false);
 
-  //   if (!identificador.trim() || !senha.trim()) {
-  //     setErro("Preencha todos os campos.");
-  //     setHasError(true);
-  //     return;
-  //   }
+    if (!identificador.trim() || !senha.trim()) {
+      setErro("Preencha todos os campos.");
+      setHasError(true);
+      return;
+    }
 
-  //   setLoading(true);
+    setLoading(true);
 
-  //   try {
-  //     const response = await fetch("http://localhost:8080/api/auth/login", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         identificador: identificador.trim(),
-  //         senha,
-  //         tipo,
-  //       }),
-  //     });
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          identificador: identificador.trim(),
+          senha,
+          tipo,
+        }),
+      });
 
-  //     if (!response.ok) {
-  //       const msg = await response.text();
-  //       setErro(msg || "Credenciais inválidas.");
-  //       setHasError(true);
-  //       return;
-  //     }
+      if (!response.ok) {
+        const msg = await response.text();
+        setErro(msg || "Credenciais inválidas.");
+        setHasError(true);
+        return;
+      }
 
-  //     const data = await response.json();
-  //     localStorage.setItem("token", data.token);
-  //     localStorage.setItem("role", data.role);
-  //     localStorage.setItem("nome", data.nome);
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+      localStorage.setItem("nome", data.nome);
 
-  //     setLogado(true);
-  //     navigate("/");
+      setLogado(true);
+      navigate("/");
 
-  //     alert(`Bem-vindo(a), ${data.nome}! Role: ${data.role}`);
-  //   } catch {
-  //     setErro("Erro ao conectar com o servidor.");
-  //     setHasError(true);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+      alert(`Bem-vindo(a), ${data.nome}! Role: ${data.role}`);
+    } catch {
+      setErro("Erro ao conectar com o servidor.");
+      setHasError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // const handleSubmit = async () => {
-  //   // 👇 ESSENCIAL
+  //const handleSubmit = async () => {
+  // 👇 ESSENCIAL
   //   setLogado(true);
 
   //   // 👇 REDIRECIONAMENTO
@@ -127,7 +127,7 @@ export default function Login({ setLogado }) {
   //   login(identificador.trim(), senha, tipo);
   // };
 
-  const handleSubmit = () => {
+  /* const handleSubmit = () => {
     setErro("");
     setHasError(false);
 
@@ -147,7 +147,7 @@ export default function Login({ setLogado }) {
     // 🔥 REDIRECIONA
     navigate("/");
   };
-
+*/
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleSubmit();
   };
