@@ -12,6 +12,9 @@ function Medicos() {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 4;
 
+  const [confirmaSenha, setConfirmaSenha] = useState("");
+  const [erroSenha, setErroSenha] = useState("");
+
   const [novoMedico, setNovoMedico] = useState({
     nome: "",
     telefone: "",
@@ -74,6 +77,18 @@ function Medicos() {
 
     console.log("Enviando JSON:", novoMedico);
 
+    if(!validarSenha(novoMedico.senha)){
+      setErroSenha(
+        "Senha Fraca! Use uma letra Maiúscula, minúscula, número e símbolo.",
+      );
+      return;
+    }
+    if(novoMedico.senha !== confirmaSenha){
+      setErroSenha("As senhas não coincidem!");
+      return;
+    }
+    setErroSenha("");
+
     try {
       const res = await axios.post(
         "http://localhost:8080/api/medicos",
@@ -88,7 +103,10 @@ function Medicos() {
         crm: "",
         especialidade: "",
         salario: "",
+        senha: "",
       });
+
+      setConfirmaSenha("");
 
       setMostrarModal(false);
     } catch (err) {
@@ -104,6 +122,12 @@ function Medicos() {
       dados: lista.slice(inicio, fim),
       totalPaginas: Math.ceil(lista.length / itensPorPagina),
     };
+  }
+
+  function validarSenha(senha){
+    const regex = 
+     /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/;
+     return regex.test(senha);
   }
 
   return (
@@ -234,12 +258,21 @@ function Medicos() {
                   required
                 />
 
-              {/*}  <input
+                <input
                 type="password"
                 placeholder="Confirmar Senha"
-                />*/}
-                
+                value={confirmaSenha}
+                onChange={(e)=>
+                  setConfirmaSenha(e.target.value)}
+                required  
+                />
+              
               </div>
+                {erroSenha && (
+                  <p style={{ color: "red", fontSize: "14px" }}>
+                  {erroSenha}
+                </p>
+              )}
 
               <div className="buttons">
                 <button
