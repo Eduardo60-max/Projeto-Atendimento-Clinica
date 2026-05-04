@@ -1,0 +1,41 @@
+services:
+  frontend:
+    build: ./Client.front
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./Server.back
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/clinica_medica
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=@hardsenha123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - JWT_SECRET=ce6a187d-ec00-4716-a3d7-879b8df42426
+      - JWT_EXPIRACAO=28800000
+    depends_on:
+      - db
+
+  ##achei bom por nessa versao por erros nas mais novas do postgres,a senha e nome do banco de dados é descutivel.
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=clinica_medica
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=@hardsenha123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+##o docker vai complementar isso->
+volumes:
+  pgdata:
+
+  ## obs(antes de usar, trocar o SPRING_DATASOURCE_URL do aplication.properties localhost para db)
+  ## ele tem que colocar tambem (spring.jpa.hibernate.ddl-auto=update) pois o docker vai criar tabela do zero.
+
+  ## para os burros como eu->
+  ##veja se esta na pasta project of services for clinic e rode->
+  ##(docker-compose up --build)

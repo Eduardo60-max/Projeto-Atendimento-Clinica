@@ -1,0 +1,107 @@
+#root {
+  margin: 0 auto;
+  padding: 0rem;
+  text-align-last: center;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: none;
+  justify-content: center;
+}
+
+nav {
+  padding: 10px;
+  /*border: solid black 2px;*/
+  height: 10%;
+  width: 100%;
+  background-color: rgba(25, 115, 174, 1);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  background-image: url(assets/logo.png);
+  background-repeat: no-repeat;
+  background-size: 145px;
+  background-position: 1% 35%;
+  display: flex;
+  justify-content: center; /* horizontal */
+  align-items: center;
+  z-index: 2;
+  position: fixed;
+}
+
+.navItem {
+  margin-right: 25px;
+  /*color: rgb(16, 36, 48);*/
+  color: white;
+  font-size: 25px;
+  transition: transform 0.2s, text-shadow 0.2s;
+}
+/*MUDAR A FONTE DA LETRA DEPOIS!!!!!*/
+
+.navItem:hover {
+  transform: translateY(-5px);
+  text-shadow: 0 5px 9px rgb(245, 245, 220, 0.9);
+}
+
+.page-container {
+  width: 100%;
+  min-height: 100vh;
+  transition: background 0.4s ease;
+}
+
+/* HOME */
+.page-container.home {
+  background: linear-gradient(
+      to bottom,
+      rgba(72, 142, 188, 0.9),
+      rgba(132, 177, 207, 0.7),
+      rgb(255, 255, 255, 0.5)
+    ) ,url("assets/homepage.jpg") no-repeat center/cover;
+}
+
+/* MEDICOS */
+.page-container.medicos {
+  background: linear-gradient(
+      to bottom,
+      rgba(72, 142, 188, 0.9),
+      rgba(132, 177, 207, 0.7),
+      rgb(255, 255, 255, 0.5)
+    ) ,url("assets/medicos.jpg") no-repeat center/cover;
+}
+
+/* PACIENTES */
+.page-container.pacientes {
+  background: linear-gradient(
+      to bottom,
+      rgba(72, 142, 188, 0.9),
+      rgba(132, 177, 207, 0.7),
+      rgb(255, 255, 255, 0.5)
+    ) ,url("assets/pacientes.jpg") no-repeat center/cover;
+}
+
+/* ATENDIMENTOS */
+.page-container.atendimentos {
+  background: linear-gradient(
+      to bottom,
+      rgba(72, 142, 188, 0.9),
+      rgba(132, 177, 207, 0.7),
+      rgb(255, 255, 255, 0.5)
+    ), url("assets/atendimento.jpg") no-repeat center/cover ;
+}
+
+/* FUNCIONARIOS */
+.page-container.funcionarios {
+  background: linear-gradient(
+      to bottom,
+      rgba(72, 142, 188, 0.9),
+      rgba(132, 177, 207, 0.7),
+      rgb(255, 255, 255, 0.5)
+    ), url("assets/funcionarios.jpg") no-repeat center/cover ;
+}
+
+.page-container {
+  opacity: 0;
+  animation: fade 0.4s forwards ease;
+}
+
+@keyframes fade {
+  to { opacity: 1; }
+}
