@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../api/api";
 import "./home.css";
 
 function Home() {
@@ -8,18 +8,18 @@ function Home() {
   const [quantAtendimentos, setQuantAtendimentos] = useState(0);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/pacientes")
+    api
+      .get("/pacientes")
       .then((res) => setQuantPacientes(res.data.length))
       .catch((err) => console.error(err));
 
-    axios
-      .get("http://localhost:8080/api/medicos")
+    api
+      .get("/medicos")
       .then((res) => setQuantMedicos(res.data.length))
       .catch((err) => console.error(err));
 
-    axios
-      .get("http://localhost:8080/api/atendimentos")
+    api
+      .get("/atendimentos")
       .then((res) => setQuantAtendimentos(res.data.length))
       .catch((err) => console.error(err));
   }, []);
