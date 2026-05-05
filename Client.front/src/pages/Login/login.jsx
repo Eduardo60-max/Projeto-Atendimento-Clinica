@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Login.css";
 
-export default function Login({ setLogado }) {
+export default function Login({ setLogado, setRole }) {
   const [tipo, setTipo] = useState("MEDICO");
   const [identificador, setIdentificador] = useState("");
   const [senha, setSenha] = useState("");
@@ -57,10 +57,9 @@ export default function Login({ setLogado }) {
       const data = await response.json();
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
+      setRole(data.role);
       localStorage.setItem("nome", data.nome);
-
       setLogado(true);
-      navigate("/");
 
       alert(`Bem-vindo(a), ${data.nome}! Role: ${data.role}`);
     } catch {
