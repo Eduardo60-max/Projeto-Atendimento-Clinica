@@ -1,6 +1,6 @@
 import "./atendimentos.css";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../api/api";
 
 function Atendimentos() {
   const [busca, setBusca] = useState("");
@@ -25,8 +25,8 @@ function Atendimentos() {
   useEffect(() => {
     setCarregando(true);
 
-    axios
-      .get("http://localhost:8080/api/atendimentos")
+    api
+      .get("/atendimentos")
       .then((res) => {
         const unicos = Array.from(
           new Map(res.data.map((a) => [a.id, a])).values(),
@@ -59,7 +59,7 @@ function Atendimentos() {
 
   async function deletarAtendimento(id) {
     try {
-      await axios.delete(`http://localhost:8080/api/atendimentos/${id}`);
+      await api.delete(`/atendimentos/${id}`);
       setAtendimentos((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {
       if (err.response?.status === 404) {
@@ -76,7 +76,7 @@ function Atendimentos() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:8080/api/agendamentos", {
+      const res = await api.post("/agendamentos", {
         medicoId: parseInt(novoAgendamento.medicoId),
         pacienteId: parseInt(novoAgendamento.pacienteId),
         funcionarioId: parseInt(novoAgendamento.funcionarioId),
@@ -170,7 +170,6 @@ function Atendimentos() {
         </div>
       )}
 
-      {/* MODAL */}
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal">
@@ -216,7 +215,6 @@ function Atendimentos() {
                   }
                 />
 
-                {}
                 <input
                   type="datetime-local"
                   value={novoAgendamento.dataHora}
@@ -255,7 +253,6 @@ function Atendimentos() {
                   required
                 />
 
-                {}
                 <input
                   type="text"
                   placeholder="ID do Funcionário"

@@ -1,6 +1,6 @@
 import "./funcionarios.css";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../api/api";
 
 function Funcionarios() {
   const [busca, setBusca] = useState("");
@@ -12,7 +12,6 @@ function Funcionarios() {
 
   const [mostrarModal, setMostrarModal] = useState(false);
 
-  // novo funcionário
   const [novoFuncionario, setNovoFuncionario] = useState({
     nome: "",
     cpf: "",
@@ -23,10 +22,9 @@ function Funcionarios() {
   useEffect(() => {
     setCarregando(true);
 
-    axios
-      .get("http://localhost:8080/api/funcionarios")
+    api
+      .get("/funcionarios")
       .then((res) => {
-        // remove duplicados se o backend estiver repetindo
         const unicos = Array.from(
           new Map(res.data.map((f) => [f.id, f])).values(),
         );
@@ -39,7 +37,6 @@ function Funcionarios() {
       });
   }, []);
 
-  // filtro
   const filtrados = funcionarios.filter(
     (f) =>
       f.nome.toLowerCase().includes(busca.toLowerCase()) ||
@@ -53,25 +50,20 @@ function Funcionarios() {
     itensPorPagina,
   );
 
-  // deletar
   async function deletarFuncionario(id) {
     try {
-      await axios.delete(`http://localhost:8080/api/funcionarios/${id}`);
+      await api.delete(`/funcionarios/${id}`);
       setFuncionarios((prev) => prev.filter((f) => f.id !== id));
     } catch (err) {
       console.error("Erro ao deletar funcionário:", err);
     }
   }
 
-  // criar
   async function criarFuncionario(e) {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:8080/api/funcionarios",
-        novoFuncionario,
-      );
+      const res = await api.post("/funcionarios", novoFuncionario);
 
       setFuncionarios((prev) => [...prev, res.data]);
 
@@ -91,6 +83,7 @@ function Funcionarios() {
       totalPaginas: Math.ceil(lista.length / itensPorPagina),
     };
   }
+
   return (
     <div className="funcionarios-container">
       <h1>Funcionários</h1>
@@ -140,7 +133,6 @@ function Funcionarios() {
         </div>
       )}
 
-      {/* MODAL */}
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal">

@@ -1,6 +1,6 @@
 import "./pacientes.css";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../api/api";
 
 function Pacientes() {
   const [busca, setBusca] = useState("");
@@ -28,11 +28,10 @@ function Pacientes() {
     setCarregando(true);
 
     Promise.all([
-      axios.get("http://localhost:8080/api/pacientes"),
-      axios.get("http://localhost:8080/api/medicos"),
+      api.get("/pacientes"),
+      api.get("/medicos"),
     ])
       .then(([resPacientes, resMedicos]) => {
-        // remover duplicados de pacientes pelo ID
         const pacientesUnicos = Array.from(
           new Map(resPacientes.data.map((p) => [p.id, p])).values(),
         );
@@ -57,7 +56,7 @@ function Pacientes() {
 
   async function deletarPaciente(id) {
     try {
-      await axios.delete(`http://localhost:8080/api/pacientes/${id}`);
+      await api.delete(`/pacientes/${id}`);
       setPacientes((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       if (err.response?.status === 404) {
@@ -76,22 +75,17 @@ function Pacientes() {
     console.log("Enviando JSON:", novoPaciente);
 
     try {
-      const res = await axios.post(
-        "http://localhost:8080/api/pacientes",
-        novoPaciente,
-      );
+      const res = await api.post("/pacientes", novoPaciente);
 
-      // adiciona no estado
       setPacientes((prev) => [...prev, res.data]);
 
-      // limpa form
       setNovoPaciente({ nome: "", cpf: "", email: "", telefone: "" });
 
       setMostrarModal(false);
     } catch (err) {
       console.error("Erro ao criar paciente:", err);
     }
-  } //Função de criar paciente -- Dps adicionar as outras páginas!
+  }
 
   function paginar(lista, paginaAtual, itensPorPagina) {
     const inicio = (paginaAtual - 1) * itensPorPagina;
@@ -108,6 +102,7 @@ function Pacientes() {
     paginaAtual,
     itensPorPagina,
   );
+
   return (
     <div className="pacientes-container">
       <h1>Pacientes</h1>
@@ -162,6 +157,7 @@ function Pacientes() {
           )}
         </div>
       )}
+
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal">
@@ -312,4 +308,5 @@ function Pacientes() {
     </div>
   );
 }
+
 export default Pacientes;

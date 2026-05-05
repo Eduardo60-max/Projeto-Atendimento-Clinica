@@ -1,6 +1,6 @@
 import "./medicos.css";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../api/api";
 
 function Medicos() {
   const [busca, setBusca] = useState("");
@@ -27,8 +27,8 @@ function Medicos() {
   useEffect(() => {
     setCarregando(true);
 
-    axios
-      .get("http://localhost:8080/api/medicos")
+    api
+      .get("/medicos")
       .then((res) => {
         const medicosUnicos = Array.from(
           new Map(res.data.map((m) => [m.id, m])).values(),
@@ -59,7 +59,7 @@ function Medicos() {
 
   async function deletarMedico(id) {
     try {
-      await axios.delete(`http://localhost:8080/api/medicos/${id}`);
+      await api.delete(`/medicos/${id}`);
       setMedicos((prev) => prev.filter((m) => m.id !== id));
     } catch (err) {
       if (err.response?.status === 404) {
@@ -77,23 +77,20 @@ function Medicos() {
 
     console.log("Enviando JSON:", novoMedico);
 
-    if(!validarSenha(novoMedico.senha)){
+    if (!validarSenha(novoMedico.senha)) {
       setErroSenha(
         "Senha Fraca! Use uma letra Maiúscula, minúscula, número e símbolo.",
       );
       return;
     }
-    if(novoMedico.senha !== confirmaSenha){
+    if (novoMedico.senha !== confirmaSenha) {
       setErroSenha("As senhas não coincidem!");
       return;
     }
     setErroSenha("");
 
     try {
-      const res = await axios.post(
-        "http://localhost:8080/api/medicos",
-        novoMedico,
-      );
+      const res = await api.post("/medicos", novoMedico);
 
       setMedicos((prev) => [...prev, res.data]);
 
@@ -107,7 +104,6 @@ function Medicos() {
       });
 
       setConfirmaSenha("");
-
       setMostrarModal(false);
     } catch (err) {
       console.error("Erro ao criar médico:", err);
@@ -124,10 +120,10 @@ function Medicos() {
     };
   }
 
-  function validarSenha(senha){
-    const regex = 
-     /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/;
-     return regex.test(senha);
+  function validarSenha(senha) {
+    const regex =
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/;
+    return regex.test(senha);
   }
 
   return (
@@ -190,7 +186,6 @@ function Medicos() {
         </div>
       )}
 
-      {/* muldqal */}
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal">
@@ -248,30 +243,28 @@ function Medicos() {
                     setNovoMedico({ ...novoMedico, salario: e.target.value })
                   }
                 />
+
                 <input
-                type="password"
-                placeholder="Senha"
-                value={novoMedico.senha || ""}
-                onChange={(e)=>
-                  setNovoMedico({...novoMedico, senha: e.target.value })
-                }
+                  type="password"
+                  placeholder="Senha"
+                  value={novoMedico.senha || ""}
+                  onChange={(e) =>
+                    setNovoMedico({ ...novoMedico, senha: e.target.value })
+                  }
                   required
                 />
 
                 <input
-                type="password"
-                placeholder="Confirmar Senha"
-                value={confirmaSenha}
-                onChange={(e)=>
-                  setConfirmaSenha(e.target.value)}
-                required  
+                  type="password"
+                  placeholder="Confirmar Senha"
+                  value={confirmaSenha}
+                  onChange={(e) => setConfirmaSenha(e.target.value)}
+                  required
                 />
-              
               </div>
-                {erroSenha && (
-                  <p style={{ color: "red", fontSize: "14px" }}>
-                  {erroSenha}
-                </p>
+
+              {erroSenha && (
+                <p style={{ color: "red", fontSize: "14px" }}>{erroSenha}</p>
               )}
 
               <div className="buttons">
@@ -291,6 +284,7 @@ function Medicos() {
           </div>
         </div>
       )}
+
       <div className="paginacao">
         <button
           onClick={() => setPaginaAtual((p) => Math.max(p - 1, 1))}
@@ -313,6 +307,5 @@ function Medicos() {
     </div>
   );
 }
-
 
 export default Medicos;
