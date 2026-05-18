@@ -70,14 +70,6 @@ export default function Login({ setLogado, setRole }) {
     }
   };
 
-  //const handleSubmit = async () => {
-  // 👇 ESSENCIAL
-  //   setLogado(true);
-
-  //   // 👇 REDIRECIONAMENTO
-  //   navigate("/");
-  // };
-
   async function login(identificador, senha, tipo) {
     try {
       const response = await axios.post(
@@ -113,40 +105,6 @@ export default function Login({ setLogado, setRole }) {
     }
   }
 
-  // const handleSubmit = () => {
-  //   setErro("");
-  //   setHasError(false);
-
-  //   if (!identificador.trim() || !senha.trim()) {
-  //     setErro("Preencha todos os campos.");
-  //     setHasError(true);
-  //     return;
-  //   }
-
-  //   login(identificador.trim(), senha, tipo);
-  // };
-
-  /* const handleSubmit = () => {
-    setErro("");
-    setHasError(false);
-
-    if (!identificador.trim() || !senha.trim()) {
-      setErro("Preencha todos os campos.");
-      setHasError(true);
-      return;
-    }
-
-    // 🔥 LOGIN MOCKADO (sem backend)
-    localStorage.setItem("token", "fake-token");
-    localStorage.setItem("role", tipo);
-    localStorage.setItem("nome", identificador);
-
-    setLogado(true);
-
-    // 🔥 REDIRECIONA
-    navigate("/");
-  };
-*/
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleSubmit();
   };

@@ -10,7 +10,7 @@ import Home from "./pages/home/Home";
 import Login from "./pages/Login/Login";
 import Medicos from "./pages/medicos/Medicos";
 import Pacientes from "./pages/pacientes/Pacientes";
-import Atendimentos from "./pages/atendimento/Atendimentos";
+import AgendaMedico from "./pages/agenda/AgendaMedico";
 import Funcionarios from "./pages/funcionarios/Funcionarios";
 import { useState } from "react";
 import "./App.css";
@@ -43,7 +43,9 @@ function Layout({ logado, setLogado, role, setRole }) {
     <div className={`page-container ${page}`}>
       {logado && (
         <nav>
-          <Link to="/" className="navItem">Home</Link>
+          <Link to="/" className="navItem">
+            Home
+          </Link>
 
           <Link to="/Atendimentos" className="navItem">
             Atendimentos
@@ -51,9 +53,15 @@ function Layout({ logado, setLogado, role, setRole }) {
 
           {role === "ATENDENTE" && (
             <>
-              <Link to="/Medicos" className="navItem">Medicos</Link>
-              <Link to="/Pacientes" className="navItem">Pacientes</Link>
-              <Link to="/Funcionarios" className="navItem">Funcionarios</Link>
+              <Link to="/Medicos" className="navItem">
+                Medicos
+              </Link>
+              <Link to="/Pacientes" className="navItem">
+                Pacientes
+              </Link>
+              <Link to="/Funcionarios" className="navItem">
+                Funcionarios
+              </Link>
             </>
           )}
 
@@ -73,8 +81,11 @@ function Layout({ logado, setLogado, role, setRole }) {
         <Route
           path="/Login"
           element={
-            logado ? <Navigate to={role === "MEDICO" ? "/Atendimentos" : "/"} />
-              : <Login setLogado={setLogado} setRole={setRole} />
+            logado ? (
+              <Navigate to={role === "MEDICO" ? "/Atendimentos" : "/"} />
+            ) : (
+              <Login setLogado={setLogado} setRole={setRole} />
+            )
           }
         />
 
@@ -133,7 +144,12 @@ export default function App() {
 
   return (
     <Router>
-      <Layout logado={logado} setLogado={setLogado} role={role} setRole={setRole} />
+      <Layout
+        logado={logado}
+        setLogado={setLogado}
+        role={role}
+        setRole={setRole}
+      />
     </Router>
   );
 }
