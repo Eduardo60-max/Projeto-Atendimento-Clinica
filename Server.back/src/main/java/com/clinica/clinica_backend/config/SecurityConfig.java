@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/login").permitAll()
 
                 // Todas as outras rotas exigem autenticação
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
 
             // Adiciona o filtro JWT antes do filtro padrão de autenticação

@@ -51,6 +51,10 @@ function Layout({ logado, setLogado, role, setRole }) {
             Atendimentos
           </Link>
 
+          <Link to="/Agenda" className="navItem">
+            Agenda
+          </Link>
+
           {role === "ATENDENTE" && (
             <>
               <Link to="/Medicos" className="navItem">
@@ -94,6 +98,15 @@ function Layout({ logado, setLogado, role, setRole }) {
           element={
             <RotaPrivada logado={logado} setLogado={setLogado}>
               <Home />
+            </RotaPrivada>
+          }
+        />
+
+        <Route
+          path="/Agenda"
+          element={
+            <RotaPrivada rolePermitido="MEDICO">
+              <AgendaMedico />
             </RotaPrivada>
           }
         />
