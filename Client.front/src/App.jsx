@@ -47,10 +47,6 @@ function Layout({ logado, setLogado, role, setRole }) {
             Home
           </Link>
 
-          <Link to="/Atendimentos" className="navItem">
-            Atendimentos
-          </Link>
-
           <Link to="/Agenda" className="navItem">
             Agenda
           </Link>
@@ -86,7 +82,7 @@ function Layout({ logado, setLogado, role, setRole }) {
           path="/Login"
           element={
             logado ? (
-              <Navigate to={role === "MEDICO" ? "/Atendimentos" : "/"} />
+              <Navigate to={role === "MEDICO" ? "/AgendaMedico" : "/"} />
             ) : (
               <Login setLogado={setLogado} setRole={setRole} />
             )
@@ -129,14 +125,14 @@ function Layout({ logado, setLogado, role, setRole }) {
           }
         />
 
-        <Route
+        {/* <Route
           path="/Atendimentos"
           element={
             <RotaPrivada>
               <Atendimentos />
             </RotaPrivada>
           }
-        />
+        /> */}
 
         <Route
           path="/Funcionarios"

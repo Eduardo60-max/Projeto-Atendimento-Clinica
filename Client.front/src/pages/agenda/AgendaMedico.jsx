@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 
 // import format from "date-fns/format";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 
-import parse from "date-fns/parse";
-import startOfWeek from "date-fns/startOfWeek";
-import getDay from "date-fns/getDay";
-import ptBR from "date-fns/locale/pt-BR";
+import { parse } from "date-fns/parse";
+import { startOfWeek } from "date-fns/startOfWeek";
+import { getDay } from "date-fns/getDay";
+import { ptBR } from "date-fns/locale";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./AgendaMedico.css";
@@ -16,9 +16,9 @@ import {
   buscarSlotsMedico,
   criarSlot,
   cancelarSlot,
-} from "../../services/slotService";
+} from "../../services/slotServices.js";
 
-import { getUsuarioId } from "../../utils/jwt";
+import { getUsuarioId } from "../../utils/jwt.js";
 
 const locales = {
   "pt-BR": ptBR,
@@ -35,6 +35,14 @@ const localizer = dateFnsLocalizer({
 export default function AgendaMedico() {
   const [eventos, setEventos] = useState([]);
 
+  const [modalAberto, setModalAberto] = useState(false);
+
+  const [dataSelecionada, setDataSelecionada] = useState(null);
+
+  const [horaInicio, setHoraInicio] = useState("");
+
+  const [horaFim, setHoraFim] = useState("");
+
   const medicoId = getUsuarioId();
 
   async function carregarSlots() {
@@ -43,7 +51,10 @@ export default function AgendaMedico() {
 
       const eventosConvertidos = slots.map((slot) => ({
         id: slot.id,
-        title: slot.status,
+        title: `${format(new Date(slot.dataHoraInicio), "HH:mm")} - ${format(
+          new Date(slot.dataHoraFim),
+          "HH:mm",
+        )}`,
         start: new Date(slot.dataHoraInicio),
         end: new Date(slot.dataHoraFim),
         status: slot.status,
@@ -51,7 +62,7 @@ export default function AgendaMedico() {
 
       setEventos(eventosConvertidos);
     } catch (err) {
-      console.error("Erro ao carregar slots:", err);
+      console.error(err);
       alert("Erro ao carregar agenda.");
     }
   }
@@ -60,30 +71,49 @@ export default function AgendaMedico() {
     carregarSlots();
   }, []);
 
-  async function handleSelectSlot({ start, end }) {
-    const confirmar = window.confirm(
-      `Criar horário de ${start.toLocaleString()} até ${end.toLocaleString()} ?`,
-    );
+  function handleSelectSlot(slotInfo) {
+    setDataSelecionada(slotInfo.start);
+    setModalAberto(true);
+  }
 
-    if (!confirmar) return;
+  async function confirmarCriacao() {
+    if (!horaInicio || !horaFim) {
+      alert("Preencha os horários.");
+      return;
+    }
 
     try {
+      const [horaI, minutoI] = horaInicio.split(":");
+      const [horaF, minutoF] = horaFim.split(":");
+
+      const inicio = new Date(dataSelecionada);
+      // Boa prática: zerar os segundos e milissegundos para evitar "sujeira" na data
+      inicio.setHours(horaI, minutoI, 0, 0);
+
+      const fim = new Date(dataSelecionada);
+      fim.setHours(horaF, minutoF, 0, 0);
+
+      // Envia a data formatada como string local (ex: "2026-05-18T10:00:00")
+      // Isso impede a conversão para UTC (+3h)
       await criarSlot({
         medicoId,
-        dataHoraInicio: start,
-        dataHoraFim: end,
+        dataHoraInicio: format(inicio, "yyyy-MM-dd'T'HH:mm:ss"),
+        dataHoraFim: format(fim, "yyyy-MM-dd'T'HH:mm:ss"),
       });
+
+      setModalAberto(false);
+      setHoraInicio("");
+      setHoraFim("");
 
       await carregarSlots();
     } catch (err) {
       console.error(err);
-      alert("Erro ao criar slot.");
+      alert("Erro ao criar horário.");
     }
   }
-
   async function handleSelectEvent(event) {
     if (event.status !== "LIVRE") {
-      alert("Apenas slots LIVRES podem ser cancelados.");
+      alert("Somente slots livres podem ser cancelados.");
       return;
     }
 
@@ -96,12 +126,12 @@ export default function AgendaMedico() {
       await carregarSlots();
     } catch (err) {
       console.error(err);
-      alert("Erro ao cancelar slot.");
+      alert("Erro ao cancelar.");
     }
   }
 
   function eventStyleGetter(event) {
-    let backgroundColor = "#888";
+    let backgroundColor = "#95a5a6";
 
     if (event.status === "LIVRE") {
       backgroundColor = "#2ecc71";
@@ -122,6 +152,7 @@ export default function AgendaMedico() {
         border: "none",
         color: "white",
         padding: "4px",
+        fontWeight: "600",
       },
     };
   }
@@ -136,8 +167,14 @@ export default function AgendaMedico() {
         startAccessor="start"
         endAccessor="end"
         selectable
-        style={{ height: "80vh" }}
+        popup
+        style={{ height: "85vh" }}
         views={["month", "week", "day"]}
+        defaultView="week"
+        step={30}
+        timeslots={1}
+        min={new Date(0, 0, 0, 6, 0, 0)}
+        max={new Date(0, 0, 0, 22, 0, 0)}
         messages={{
           next: "Próximo",
           previous: "Anterior",
@@ -150,6 +187,51 @@ export default function AgendaMedico() {
         onSelectEvent={handleSelectEvent}
         eventPropGetter={eventStyleGetter}
       />
+
+      {modalAberto && (
+        <div className="modal-overlay">
+          <div className="modal-agenda">
+            <h2>Novo Horário</h2>
+
+            <div className="campo-modal">
+              <label>Horário de início</label>
+
+              <input
+                type="time"
+                value={horaInicio}
+                onChange={(e) => setHoraInicio(e.target.value)}
+              />
+            </div>
+
+            <div className="campo-modal">
+              <label>Horário de saída</label>
+
+              <input
+                type="time"
+                value={horaFim}
+                onChange={(e) => setHoraFim(e.target.value)}
+              />
+            </div>
+
+            <div className="botoes-modal">
+              <button className="btn-confirmar" onClick={confirmarCriacao}>
+                Confirmar
+              </button>
+
+              <button
+                className="btn-cancelar"
+                onClick={() => {
+                  setModalAberto(false);
+                  setHoraInicio("");
+                  setHoraFim("");
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

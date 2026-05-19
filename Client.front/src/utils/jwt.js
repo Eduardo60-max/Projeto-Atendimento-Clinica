@@ -21,4 +21,3 @@ export function getUsuarioRole() {
   const payload = getTokenPayload();
   return payload?.role;
 }
-s;
