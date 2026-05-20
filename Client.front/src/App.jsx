@@ -6,6 +6,7 @@ import {
   useLocation,
   Navigate,
 } from "react-router-dom";
+import AgendaAtendente from "./pages/agenda/AgendaAtendente";
 import Home from "./pages/home/Home";
 import Login from "./pages/Login/Login";
 import Medicos from "./pages/medicos/Medicos";
@@ -62,6 +63,9 @@ function Layout({ logado, setLogado, role, setRole }) {
               <Link to="/Funcionarios" className="navItem">
                 Funcionarios
               </Link>
+              <Link to="/AgendaMedicos" className="navItem">
+                Agenda Médicos
+              </Link>
             </>
           )}
 
@@ -103,6 +107,15 @@ function Layout({ logado, setLogado, role, setRole }) {
           element={
             <RotaPrivada rolePermitido="MEDICO">
               <AgendaMedico />
+            </RotaPrivada>
+          }
+        />
+
+        <Route
+          path="/AgendaMedicos"
+          element={
+            <RotaPrivada rolePermitido="ATENDENTE">
+              <AgendaAtendente />
             </RotaPrivada>
           }
         />
