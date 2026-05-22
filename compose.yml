@@ -23,6 +23,8 @@ services:
   ##achei bom por nessa versao por erros nas mais novas do postgres,a senha e nome do banco de dados é descutivel.
   db:
     image: postgres:15
+    ports:
+    - "5433:5432"
     environment:
       - POSTGRES_DB=clinica_medica
       - POSTGRES_USER=postgres
