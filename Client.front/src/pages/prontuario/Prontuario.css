@@ -1,0 +1,143 @@
+.prontuario-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.prontuario-title {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.prontuario-divider {
+  border: 0;
+  border-top: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+}
+
+/* Card com informações da consulta */
+.consulta-card {
+  background-color: #f4f6f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 5px solid #007bff;
+}
+
+.consulta-card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #007bff;
+  font-size: 18px;
+}
+
+.consulta-card p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #495057;
+}
+
+.consulta-aviso {
+  margin-bottom: 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Mensagens de feedback (Sucesso / Erro) */
+.mensagem-feedback {
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.mensagem-feedback.sucesso {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.mensagem-feedback.erro {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Formulário e Campo de Texto */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.textarea-prontuario {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  font-size: 16px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.textarea-prontuario:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Botões */
+.btn-group {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.btn-salvar {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.btn-salvar:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.btn-salvar:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.btn-voltar {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.btn-voltar:hover {
+  background-color: #5a6268;
+}
+
+.loading-container {
+  padding: 40px;
+  text-align: center;
+  font-size: 16px;
+  color: #6c757d;
+}
