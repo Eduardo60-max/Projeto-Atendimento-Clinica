@@ -6,66 +6,55 @@ import {
   useLocation,
   Navigate,
 } from "react-router-dom";
-import AgendaAtendente from "./pages/agenda/AgendaAtendente";
 import Home from "./pages/home/Home";
 import Login from "./pages/Login/Login";
 import Medicos from "./pages/medicos/Medicos";
 import Pacientes from "./pages/pacientes/Pacientes";
-import AgendaMedico from "./pages/agenda/AgendaMedico";
+import Atendimentos from "./pages/atendimento/Atendimentos";
 import Funcionarios from "./pages/funcionarios/Funcionarios";
+import Prontuario from "./pages/prontuario/Prontuario"; // 1. IMPORTAÇÃO DA NOVA TELA
 import { useState } from "react";
 import "./App.css";
 
 function Layout({ logado, setLogado, role, setRole }) {
   const location = useLocation();
 
-  function RotaPrivada({ children, rolePermitido }) {
+  function RotaPrivada({ children, rolesPermitidos }) {
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
+    const roleUsuario = localStorage.getItem("role");
 
     if (!token) {
       return <Login setLogado={setLogado} setRole={setRole} />;
     }
 
-    if (rolePermitido && role !== rolePermitido) {
+    // Se houver restrição de roles e a role do usuário não estiver na lista permitida
+    if (rolesPermitidos && !rolesPermitidos.includes(roleUsuario)) {
       return <h1>Acesso negado</h1>;
     }
 
     return children;
   }
 
-  // transforma a rota em nome de classe
   const page =
     location.pathname === "/"
       ? "home"
-      : location.pathname.replace("/", "").toLowerCase();
+      : location.pathname.replace("/", "").replace(/\/\d+/g, "").toLowerCase();
 
   return (
     <div className={`page-container ${page}`}>
       {logado && (
         <nav>
-          <Link to="/" className="navItem">
-            Home
-          </Link>
+          <Link to="/" className="navItem">Home</Link>
 
-          <Link to="/Agenda" className="navItem">
-            Agenda
+          <Link to="/Atendimentos" className="navItem">
+            Atendimentos
           </Link>
 
           {role === "ATENDENTE" && (
             <>
-              <Link to="/Medicos" className="navItem">
-                Medicos
-              </Link>
-              <Link to="/Pacientes" className="navItem">
-                Pacientes
-              </Link>
-              <Link to="/Funcionarios" className="navItem">
-                Funcionarios
-              </Link>
-              <Link to="/AgendaMedicos" className="navItem">
-                Agenda Médicos
-              </Link>
+              <Link to="/Medicos" className="navItem">Medicos</Link>
+              <Link to="/Pacientes" className="navItem">Pacientes</Link>
+              <Link to="/Funcionarios" className="navItem">Funcionarios</Link>
             </>
           )}
 
@@ -85,8 +74,9 @@ function Layout({ logado, setLogado, role, setRole }) {
         <Route
           path="/Login"
           element={
+            /* CORRIGIDO: Se for MEDICO ou FUNCIONARIO, vai direto para Atendimentos */
             logado ? (
-              <Navigate to={role === "MEDICO" ? "/AgendaMedico" : "/"} />
+              <Navigate to={role === "MEDICO" || role === "FUNCIONARIO" ? "/Atendimentos" : "/"} />
             ) : (
               <Login setLogado={setLogado} setRole={setRole} />
             )
@@ -96,26 +86,8 @@ function Layout({ logado, setLogado, role, setRole }) {
         <Route
           path="/"
           element={
-            <RotaPrivada logado={logado} setLogado={setLogado}>
+            <RotaPrivada>
               <Home />
-            </RotaPrivada>
-          }
-        />
-
-        <Route
-          path="/Agenda"
-          element={
-            <RotaPrivada rolePermitido="MEDICO">
-              <AgendaMedico />
-            </RotaPrivada>
-          }
-        />
-
-        <Route
-          path="/AgendaMedicos"
-          element={
-            <RotaPrivada rolePermitido="ATENDENTE">
-              <AgendaAtendente />
             </RotaPrivada>
           }
         />
@@ -123,7 +95,7 @@ function Layout({ logado, setLogado, role, setRole }) {
         <Route
           path="/Medicos"
           element={
-            <RotaPrivada rolePermitido="ATENDENTE">
+            <RotaPrivada rolesPermitidos={["ATENDENTE"]}>
               <Medicos />
             </RotaPrivada>
           }
@@ -132,26 +104,36 @@ function Layout({ logado, setLogado, role, setRole }) {
         <Route
           path="/Pacientes"
           element={
-            <RotaPrivada rolePermitido="ATENDENTE">
+            <RotaPrivada rolesPermitidos={["ATENDENTE"]}>
               <Pacientes />
             </RotaPrivada>
           }
         />
 
-        {/* <Route
+        <Route
           path="/Atendimentos"
           element={
             <RotaPrivada>
               <Atendimentos />
             </RotaPrivada>
           }
-        /> */}
+        />
 
         <Route
           path="/Funcionarios"
           element={
-            <RotaPrivada rolePermitido="ATENDENTE">
+            <RotaPrivada rolesPermitidos={["ATENDENTE"]}>
               <Funcionarios />
+            </RotaPrivada>
+          }
+        />
+        
+        {/* ROTA DO PRONTUÁRIO ATUALIZADA: Liberada bem limpa para os dois usando Array */}
+        <Route
+          path="/prontuario/:consultaId"
+          element={
+            <RotaPrivada rolesPermitidos={["MEDICO", "FUNCIONARIO"]}>
+              <Prontuario />
             </RotaPrivada>
           }
         />
@@ -166,12 +148,7 @@ export default function App() {
 
   return (
     <Router>
-      <Layout
-        logado={logado}
-        setLogado={setLogado}
-        role={role}
-        setRole={setRole}
-      />
+      <Layout logado={logado} setLogado={setLogado} role={role} setRole={setRole} />
     </Router>
   );
 }
