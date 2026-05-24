@@ -44,7 +44,7 @@
   font-style: italic;
 }
 
-/* Mensagens de feedback (Sucesso / Erro) */
+
 .mensagem-feedback {
   padding: 12px;
   margin-bottom: 20px;
@@ -65,7 +65,6 @@
   border: 1px solid #f5c6cb;
 }
 
-/* Formulário e Campo de Texto */
 .form-group {
   margin-bottom: 20px;
 }
@@ -95,7 +94,6 @@
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/* Botões */
 .btn-group {
   display: flex;
   gap: 12px;

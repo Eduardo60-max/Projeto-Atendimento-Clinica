@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api/api";
-import "./prontuario.css";
+import "./Prontuario.css";
 
 const Prontuario = () => {
   const { consultaId } = useParams(); 
@@ -13,6 +13,8 @@ const Prontuario = () => {
   const [salvando, setSalvando] = useState(false);
   const [mensagem, setMensagem] = useState({ tipo: "", texto: "" });
 
+  const [isEdicao, setIsEdicao] = useState(false);
+
   useEffect(() => {
     const carregarProntuario = async () => {
       try {
@@ -22,13 +24,19 @@ const Prontuario = () => {
         if (response.data) {
           setDescricao(response.data.descricao || "");
           setConsulta(response.data.consulta); 
+          setIsEdicao(true);
         }
       } catch (error) {
-        console.error("Erro ao carregar o prontuário:", error);
-        setMensagem({
-          tipo: "erro",
-          texto: "Não foi possível carregar os dados desta consulta.",
-        });
+        if (error.response && error.response.status === 404) {
+          setIsEdicao(false);
+          //precisa de um /consultas/${consultaId} aqui para preencher o card do topo.
+        } else {
+          console.error("Erro ao carregar o prontuário:", error);
+          setMensagem({
+            tipo: "erro",
+            texto: "Não foi possível carregar os dados desta consulta.",
+          });
+        }
       } finally {
         setLoading(false);
       }
@@ -45,10 +53,19 @@ const Prontuario = () => {
       setSalvando(true);
       setMensagem({ tipo: "", texto: "" });
 
-      await api.post("/prontuarios", {
-        consultaId: parseInt(consultaId),
+      const idFormatado = isNaN(consultaId) ? consultaId : parseInt(consultaId);
+
+      const payload = {
+        consultaId: idFormatado,
         descricao: descricao,
-      });
+      };
+
+      if (isEdicao) {
+        await api.put(`/prontuarios/consulta/${consultaId}`, payload);
+      } else {
+        await api.post("/prontuarios", payload);
+        setIsEdicao(true);
+      }
 
       setMensagem({ tipo: "sucesso", texto: "Prontuário salvo com sucesso!" });
     } catch (error) {
