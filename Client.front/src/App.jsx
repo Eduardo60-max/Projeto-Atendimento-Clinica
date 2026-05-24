@@ -14,6 +14,7 @@ import Pacientes from "./pages/pacientes/Pacientes";
 import AgendaMedico from "./pages/agenda/AgendaMedico";
 import Funcionarios from "./pages/funcionarios/Funcionarios";
 import Prontuario from "./pages/prontuario/Prontuario";
+import Consultas from "./pages/consultas/Consultas";
 import { useState } from "react";
 import "./App.css";
 
@@ -49,10 +50,16 @@ function Layout({ logado, setLogado, role, setRole }) {
           </Link>
 
           {role === "MEDICO" && (
-            <Link to="/Agenda" className="navItem">
-              Agenda
-            </Link>
-          )}
+          <>
+    <Link to="/Agenda" className="navItem">
+      Agenda
+    </Link>
+
+    <Link to="/Consultas" className="navItem">
+      Consultas
+    </Link>
+  </>
+)}
 
           {role === "ATENDENTE" && (
             <>
@@ -136,6 +143,15 @@ function Layout({ logado, setLogado, role, setRole }) {
           element={
             <RotaPrivada rolePermitido="ATENDENTE">
               <Pacientes />
+            </RotaPrivada>
+          }
+        />
+
+        <Route
+          path="/Consultas"
+          element={
+            <RotaPrivada rolePermitido="MEDICO">
+              <Consultas />
             </RotaPrivada>
           }
         />

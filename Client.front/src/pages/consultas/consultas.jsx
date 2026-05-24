@@ -1,4 +1,4 @@
-import "./consultas.css";
+import "./Consultas.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
@@ -106,6 +106,7 @@ function Consultas() {
   }
 
   return (
+    
     <div className="consultas">
       <h1>Consultas</h1>
 
