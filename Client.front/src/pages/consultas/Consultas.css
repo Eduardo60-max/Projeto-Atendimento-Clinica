@@ -1,3 +1,79 @@
 .consultas{
-    background-color: beige;
+    background-color: #ffff;
+    font-family: "Merriweather Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+.consultas h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 95px;
+    margin-bottom: 7px;
+}
+
+.consultas p{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 7px;
+}
+.pagincao{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 25px;
+  font-family: "Merriweather Sans", sans-serif;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.paginacao button {
+  background-color: #afdaf7;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px 18px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  font-family: "Merriweather Sans", sans-serif;
+  font-weight: 600;
+  color: #2c3e50;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.1s;
+}
+.paginacao button:hover:not(:disabled) {
+  background-color: cornflowerblue;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.paginacao button:disabled {
+  background-color: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.paginacao span {
+  font-size: 15px;
+}
+/*falta fazer uma inserção para por o css nessa parte!!*/
+.buttonsConsulta{}
+.btn-cancelar{}
+
+.btn-realizar{}
+
+.consulta-cartao{}
+.consultas-lista{}
+.consultas-busca{
+    background-color: rgba(173, 216, 230, 0.699);
+    border-radius: 5px;
+    width: 500px;
+    height: 30px;
+    margin-bottom: 10px;
+    border-color: #1973ae;
 }

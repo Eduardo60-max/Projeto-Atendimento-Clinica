@@ -163,7 +163,7 @@ function Consultas() {
                   </span>
                 </p>
 
-                <div className="buttons">
+                <div className="buttonsConsulta">
                   {c.status === "AGENDADO" && (
                     <>
                       <button
