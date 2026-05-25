@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
-
 import { format } from "date-fns";
 import { parse } from "date-fns";
 import { startOfWeek } from "date-fns";
 import { getDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
-
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./AgendaMedico.css";
-
+import api from "../../api/api";
 import { buscarSlotsMedico } from "../../services/slotServices";
 import { listarMedicos } from "../../services/medicoServices";
 
-const locales = {
-  "pt-BR": ptBR,
-};
+const locales = { "pt-BR": ptBR };
 
 const localizer = dateFnsLocalizer({
   format,
@@ -24,13 +20,21 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
+
 export default function AgendaAtendente() {
   const [medicos, setMedicos] = useState([]);
   const [medicoSelecionado, setMedicoSelecionado] = useState("");
   const [eventos, setEventos] = useState([]);
+  const [pacientes, setPacientes] = useState([]);
+
+  const [modalAberto, setModalAberto] = useState(false);
+  const [slotSelecionado, setSlotSelecionado] = useState(null);
+  const [pacienteId, setPacienteId] = useState("");
+  const [salvando, setSalvando] = useState(false);
 
   useEffect(() => {
     carregarMedicos();
+    carregarPacientes();
   }, []);
 
   async function carregarMedicos() {
@@ -43,10 +47,18 @@ export default function AgendaAtendente() {
     }
   }
 
+  async function carregarPacientes() {
+    try {
+      const res = await api.get("/pacientes");
+      setPacientes(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   async function carregarAgenda(medicoId) {
     try {
       const slots = await buscarSlotsMedico(medicoId);
-
       const eventosConvertidos = slots.map((slot) => ({
         id: slot.id,
         title:
@@ -58,6 +70,7 @@ export default function AgendaAtendente() {
         start: new Date(slot.dataHoraInicio),
         end: new Date(slot.dataHoraFim),
         status: slot.status,
+        slotId: slot.id,
       }));
       setEventos(eventosConvertidos);
     } catch (err) {
@@ -68,27 +81,53 @@ export default function AgendaAtendente() {
 
   function handleSelecionarMedico(e) {
     const id = e.target.value;
-
     setMedicoSelecionado(id);
-    if (id) {
-      carregarAgenda(id);
+    if (id) carregarAgenda(id);
+    else setEventos([]);
+  }
+
+  // Clique em evento do calendário
+  function handleSelectEvent(event) {
+    if (event.status !== "LIVRE") {
+      alert("Este horário não está disponível para agendamento.");
+      return;
+    }
+    setSlotSelecionado(event);
+    setPacienteId("");
+    setModalAberto(true);
+  }
+
+  async function confirmarAgendamento() {
+    if (!pacienteId) {
+      alert("Selecione um paciente.");
+      return;
+    }
+
+    try {
+      setSalvando(true);
+      await api.post("/agendamentos", {
+        slotId: slotSelecionado.slotId,
+        pacienteId: parseInt(pacienteId),
+        medicoId: parseInt(medicoSelecionado),
+      });
+
+      setModalAberto(false);
+      setSlotSelecionado(null);
+      setPacienteId("");
+      await carregarAgenda(medicoSelecionado);
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao realizar agendamento. Tente novamente.");
+    } finally {
+      setSalvando(false);
     }
   }
 
   function eventStyleGetter(event) {
     let backgroundColor = "#888";
-
-    if (event.status === "LIVRE") {
-      backgroundColor = "#2ecc71";
-    }
-
-    if (event.status === "OCUPADO") {
-      backgroundColor = "#3498db";
-    }
-
-    if (event.status === "CANCELADO") {
-      backgroundColor = "#7f8c8d";
-    }
+    if (event.status === "LIVRE") backgroundColor = "#2ecc71";
+    if (event.status === "OCUPADO") backgroundColor = "#3498db";
+    if (event.status === "CANCELADO") backgroundColor = "#7f8c8d";
 
     return {
       style: {
@@ -96,9 +135,12 @@ export default function AgendaAtendente() {
         borderRadius: "8px",
         border: "none",
         color: "white",
+        cursor: event.status === "LIVRE" ? "pointer" : "default",
       },
     };
   }
+
+  const medicoNome = medicos.find((m) => m.id === parseInt(medicoSelecionado))?.nome || "";
 
   return (
     <div className="agenda-container">
@@ -106,10 +148,8 @@ export default function AgendaAtendente() {
 
       <div className="filtro-medico">
         <label>Selecione um médico:</label>
-
         <select value={medicoSelecionado} onChange={handleSelecionarMedico}>
           <option value="">Escolha um médico</option>
-
           {medicos.map((medico) => (
             <option key={medico.id} value={medico.id}>
               {medico.nome} - {medico.especialidade}
@@ -119,25 +159,100 @@ export default function AgendaAtendente() {
       </div>
 
       {medicoSelecionado && (
-        <Calendar
-          localizer={localizer}
-          events={eventos}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: "80vh" }}
-          views={["week", "day"]}
-          defaultView="week"
-          selectable={false}
-          messages={{
-            next: "Próximo",
-            previous: "Anterior",
-            today: "Hoje",
-            month: "Mês",
-            week: "Semana",
-            day: "Dia",
-          }}
-          eventPropGetter={eventStyleGetter}
-        />
+        <>
+          <Calendar
+            localizer={localizer}
+            events={eventos}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: "80vh" }}
+            views={["week", "day"]}
+            defaultView="week"
+            selectable={false}
+            messages={{
+              next: "Próximo",
+              previous: "Anterior",
+              today: "Hoje",
+              month: "Mês",
+              week: "Semana",
+              day: "Dia",
+            }}
+            onSelectEvent={handleSelectEvent}
+            eventPropGetter={eventStyleGetter}
+          />
+
+          {/* Legenda */}
+          <div style={{ display: "flex", gap: 20, marginTop: 16, fontSize: 14 }}>
+            <span><span style={{ color: "#2ecc71", fontWeight: 700 }}>●</span> Disponível — clique para agendar</span>
+            <span><span style={{ color: "#3498db", fontWeight: 700 }}>●</span> Ocupado</span>
+            <span><span style={{ color: "#7f8c8d", fontWeight: 700 }}>●</span> Cancelado</span>
+          </div>
+        </>
+      )}
+
+      {/* Modal de agendamento */}
+      {modalAberto && slotSelecionado && (
+        <div className="modal-overlay">
+          <div className="modal-agenda">
+            <h2>Novo Agendamento</h2>
+
+            <div className="campo-modal">
+              <label>Horário</label>
+              <input
+                type="text"
+                readOnly
+                value={`${format(slotSelecionado.start, "dd/MM/yyyy HH:mm")} → ${format(slotSelecionado.end, "HH:mm")}`}
+                style={{ background: "#f4f7fb", cursor: "default" }}
+              />
+            </div>
+
+            <div className="campo-modal">
+              <label>Médico</label>
+              <input
+                type="text"
+                readOnly
+                value={medicoNome}
+                style={{ background: "#f4f7fb", cursor: "default" }}
+              />
+            </div>
+
+            <div className="campo-modal">
+              <label>Paciente</label>
+              <select
+                value={pacienteId}
+                onChange={(e) => setPacienteId(e.target.value)}
+                style={{ padding: "10px", borderRadius: "8px", border: "1px solid #ccc", fontSize: 15 }}
+              >
+                <option value="">-- Selecione um paciente --</option>
+                {pacientes.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.nome} {p.cpf ? `— ${p.cpf}` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="botoes-modal">
+              <button
+                className="btn-confirmar"
+                onClick={confirmarAgendamento}
+                disabled={salvando}
+              >
+                {salvando ? "Salvando..." : "Confirmar"}
+              </button>
+              <button
+                className="btn-cancelar"
+                onClick={() => {
+                  setModalAberto(false);
+                  setSlotSelecionado(null);
+                  setPacienteId("");
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
