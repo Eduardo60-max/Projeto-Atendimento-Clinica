@@ -1,0 +1,186 @@
+/* Container principal */
+.agenda-container {
+  max-width: 1100px;
+  margin: 100px auto;
+  padding: 20px;
+  background-color: #fdfdfd;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.agenda-container h1 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-family: "Inter Tight", sans-serif;
+  font-weight: 700;
+  font-size: 50px;
+}
+
+/* Descrição */
+.agenda-container p {
+  color: #555;
+  margin-bottom: 20px;
+  font-family: "Merriweather Sans", sans-serif;
+  font-weight: 600;
+}
+
+/* Filtro de médico */
+.filtro-medico {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.filtro-medico label {
+  font-family: "Merriweather Sans", sans-serif;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 15px;
+}
+
+.filtro-medico select {
+  padding: 10px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #fafafa;
+  color: #2c3e50;
+  transition: border-color 0.3s;
+  min-width: 260px;
+}
+
+.filtro-medico select:focus {
+  border-color: #afdaf7;
+  box-shadow: 0 0 5px cornflowerblue;
+  outline: none;
+}
+
+/* Legenda do calendário */
+.agenda-legenda {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+  font-size: 14px;
+  font-family: "Merriweather Sans", sans-serif;
+  font-weight: 600;
+  color: #555;
+}
+
+/* --- OVERLAY DO MODAL --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* --- CAIXA DO MODAL --- */
+.modal-agenda {
+  background: #fff;
+  width: 480px;
+  max-width: 95%;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  color: #2c3e50;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-agenda h2 {
+  text-align: center;
+  font-family: "Inter Tight", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 4px;
+}
+
+/* Campos do modal */
+.campo-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo-modal label {
+  font-family: "Merriweather Sans", sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: #34495e;
+}
+
+.campo-modal input,
+.campo-modal select {
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #fafafa;
+  color: #2c3e50;
+  transition: border-color 0.2s;
+}
+
+.campo-modal input:focus,
+.campo-modal select:focus {
+  border-color: #afdaf7;
+  box-shadow: 0 0 5px cornflowerblue;
+  outline: none;
+}
+
+/* Botões do modal */
+.botoes-modal {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.btn-confirmar {
+  background-color: #afdaf7;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px 22px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  font-family: "Merriweather Sans", sans-serif;
+  font-weight: 600;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.btn-confirmar:hover:not(:disabled) {
+  background-color: cornflowerblue;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-confirmar:disabled {
+  background-color: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-cancelar {
+  background: #ccc;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: "Merriweather Sans", sans-serif;
+  transition: background-color 0.2s;
+}
+
+.btn-cancelar:hover {
+  background: #b1b1b1;
+}

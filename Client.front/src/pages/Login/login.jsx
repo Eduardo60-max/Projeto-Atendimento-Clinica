@@ -59,6 +59,7 @@ export default function Login({ setLogado, setRole }) {
       localStorage.setItem("role", data.role);
       setRole(data.role);
       localStorage.setItem("nome", data.nome);
+      localStorage.setItem("id", data.id);
       setLogado(true);
 
       alert(`Bem-vindo(a), ${data.nome}! Role: ${data.role}`);

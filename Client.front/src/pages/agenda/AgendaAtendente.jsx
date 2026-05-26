@@ -7,6 +7,7 @@ import { getDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./AgendaMedico.css";
+import "./AgendaAtendente.css";
 import api from "../../api/api";
 import { buscarSlotsMedico } from "../../services/slotServices";
 import { listarMedicos } from "../../services/medicoServices";
@@ -98,30 +99,38 @@ export default function AgendaAtendente() {
   }
 
   async function confirmarAgendamento() {
-    if (!pacienteId) {
-      alert("Selecione um paciente.");
-      return;
-    }
-
-    try {
-      setSalvando(true);
-      await api.post("/agendamentos", {
-        slotId: slotSelecionado.slotId,
-        pacienteId: parseInt(pacienteId),
-        medicoId: parseInt(medicoSelecionado),
-      });
-
-      setModalAberto(false);
-      setSlotSelecionado(null);
-      setPacienteId("");
-      await carregarAgenda(medicoSelecionado);
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao realizar agendamento. Tente novamente.");
-    } finally {
-      setSalvando(false);
-    }
+  if (!pacienteId) {
+    alert("Selecione um paciente.");
+    return;
   }
+
+  const funcionarioId = localStorage.getItem("id");
+  if (!funcionarioId) {
+    alert("Sessão inválida. Faça login novamente.");
+    return;
+  }
+
+  try {
+    setSalvando(true);
+    await api.post("/consultas", {
+      slotId: slotSelecionado.slotId,
+      pacienteId: parseInt(pacienteId),
+      funcionarioId: parseInt(funcionarioId),
+      tipo: "CONSULTA",
+      preco: 0,
+    });
+
+    setModalAberto(false);
+    setSlotSelecionado(null);
+    setPacienteId("");
+    await carregarAgenda(medicoSelecionado);
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao realizar agendamento. Tente novamente.");
+  } finally {
+    setSalvando(false);
+  }
+}
 
   function eventStyleGetter(event) {
     let backgroundColor = "#888";

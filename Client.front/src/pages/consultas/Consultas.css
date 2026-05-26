@@ -62,12 +62,28 @@
   font-size: 15px;
 }
 /*falta fazer uma inserção para por o css nessa parte!!*/
-.buttonsConsulta{}
+.buttonsConsulta{
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
 .btn-cancelar{}
 
 .btn-realizar{}
 
-.consulta-cartao{}
+.consulta-cartao{
+    padding: 10px;
+    border: solid 2px #afdaf7;
+    margin: 10px;
+    width: 350px;
+    height: auto;
+}
+.consulta-cartao p{
+  gap: 5px;
+}
 .consultas-lista{}
 .consultas-busca{
     background-color: rgba(173, 216, 230, 0.699);

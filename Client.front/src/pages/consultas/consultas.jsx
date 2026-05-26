@@ -42,11 +42,9 @@ function Consultas() {
 
   const filtradas = consultas.filter(
     (c) =>
-      c.pacienteNome
-        .toLowerCase()
-        .includes(busca.toLowerCase()) ||
-      c.tipo.toLowerCase().includes(busca.toLowerCase()) ||
-      c.status.toLowerCase().includes(busca.toLowerCase()),
+      c.pacienteNome?.toLowerCase().includes(busca.toLowerCase()) ||
+      c.tipo?.toLowerCase().includes(busca.toLowerCase()) ||
+      c.status?.toLowerCase().includes(busca.toLowerCase()),
   );
 
   function paginar(lista, paginaAtual, itensPorPagina) {

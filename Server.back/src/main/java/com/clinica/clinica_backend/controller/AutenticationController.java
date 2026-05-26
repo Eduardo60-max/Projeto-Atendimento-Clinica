@@ -1,17 +1,22 @@
 package com.clinica.clinica_backend.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.clinica.clinica_backend.dto.LoginDto;
 import com.clinica.clinica_backend.model.Funcionario;
 import com.clinica.clinica_backend.model.Medico;
 import com.clinica.clinica_backend.service.FuncionarioService;
 import com.clinica.clinica_backend.service.JwtService;
 import com.clinica.clinica_backend.service.MedicoService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -54,6 +59,7 @@ public class AutenticationController {
                 resposta.put("token", token);
                 resposta.put("role", "MEDICO");
                 resposta.put("nome", medico.getNome());
+                resposta.put("id", medico.getId());
 
                 return ResponseEntity.ok(resposta);
 
@@ -78,6 +84,7 @@ public class AutenticationController {
                 resposta.put("token", token);
                 resposta.put("role", "ATENDENTE");
                 resposta.put("nome", funcionario.getNome());
+                resposta.put("id", funcionario.getId());
 
                 return ResponseEntity.ok(resposta);
 
