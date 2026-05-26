@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 
-// import format from "date-fns/format";
 import { format } from "date-fns/format";
-
 import { parse } from "date-fns/parse";
 import { startOfWeek } from "date-fns/startOfWeek";
 import { getDay } from "date-fns/getDay";
@@ -20,9 +18,7 @@ import {
 
 import { getUsuarioId } from "../../utils/jwt.js";
 
-const locales = {
-  "pt-BR": ptBR,
-};
+const locales = { "pt-BR": ptBR };
 
 const localizer = dateFnsLocalizer({
   format,
@@ -33,34 +29,23 @@ const localizer = dateFnsLocalizer({
 });
 
 export default function AgendaMedico() {
-  const [eventos, setEventos] = useState([]);
+  // slots brutos do backend (com dataHoraInicio, dataHoraFim, status)
+  const [slots, setSlots] = useState([]);
 
   const [modalAberto, setModalAberto] = useState(false);
-
   const [dataSelecionada, setDataSelecionada] = useState(null);
-
   const [horaInicio, setHoraInicio] = useState("");
-
   const [horaFim, setHoraFim] = useState("");
+
+  // slot clicado para cancelar
+  const [slotClicado, setSlotClicado] = useState(null);
 
   const medicoId = getUsuarioId();
 
   async function carregarSlots() {
     try {
-      const slots = await buscarSlotsMedico(medicoId);
-
-      const eventosConvertidos = slots.map((slot) => ({
-        id: slot.id,
-        title: `${format(new Date(slot.dataHoraInicio), "HH:mm")} - ${format(
-          new Date(slot.dataHoraFim),
-          "HH:mm",
-        )}`,
-        start: new Date(slot.dataHoraInicio),
-        end: new Date(slot.dataHoraFim),
-        status: slot.status,
-      }));
-
-      setEventos(eventosConvertidos);
+      const dados = await buscarSlotsMedico(medicoId);
+      setSlots(dados);
     } catch (err) {
       console.error(err);
       alert("Erro ao carregar agenda.");
@@ -71,9 +56,89 @@ export default function AgendaMedico() {
     carregarSlots();
   }, []);
 
+  // Verifica se um bloquinho de tempo está dentro de algum slot e retorna o status
+  function getStatusDoBloco(blocoDate) {
+    for (const slot of slots) {
+      const inicio = new Date(slot.dataHoraInicio);
+      const fim = new Date(slot.dataHoraFim);
+      if (blocoDate >= inicio && blocoDate < fim) {
+        return slot.status;
+      }
+    }
+    return null;
+  }
+
+  // Retorna o slot que contém aquele bloco de tempo
+  function getSlotDoBloco(blocoDate) {
+    return slots.find((slot) => {
+      const inicio = new Date(slot.dataHoraInicio);
+      const fim = new Date(slot.dataHoraFim);
+      return blocoDate >= inicio && blocoDate < fim;
+    });
+  }
+
+  // Colore os bloquinhos de 30min do calendário
+  function slotPropGetter(date) {
+    const status = getStatusDoBloco(date);
+
+    if (status === "LIVRE") {
+      return {
+        style: {
+          backgroundColor: "#d5f5e3",
+          borderTop: "1px solid #2ecc71",
+        },
+      };
+    }
+
+    if (status === "OCUPADO") {
+      return {
+        style: {
+          backgroundColor: "#d6eaf8",
+          borderTop: "1px solid #3498db",
+        },
+      };
+    }
+
+    if (status === "CANCELADO") {
+      return {
+        style: {
+          backgroundColor: "#f2f3f4",
+          borderTop: "1px solid #aab7b8",
+        },
+      };
+    }
+
+    return {};
+  }
+
+  // Clique numa área vazia → abre modal para criar slot
   function handleSelectSlot(slotInfo) {
     setDataSelecionada(slotInfo.start);
     setModalAberto(true);
+  }
+
+  // Clique num bloco colorido → pergunta se quer cancelar (só LIVRE)
+  function handleClickSlot(slotInfo) {
+    const slot = getSlotDoBloco(slotInfo.start);
+    if (!slot) return;
+
+    if (slot.status !== "LIVRE") {
+      alert("Somente slots livres podem ser cancelados.");
+      return;
+    }
+
+    const confirmar = window.confirm(
+      `Deseja cancelar o horário ${format(new Date(slot.dataHoraInicio), "HH:mm")} - ${format(new Date(slot.dataHoraFim), "HH:mm")}?`
+    );
+
+    if (!confirmar) return;
+
+    cancelarSlot(slot.id)
+      .then(() => carregarSlots())
+      .catch((err) => {
+        console.error(err);
+        alert("Erro ao cancelar.");
+      });
   }
 
   async function confirmarCriacao() {
@@ -87,14 +152,11 @@ export default function AgendaMedico() {
       const [horaF, minutoF] = horaFim.split(":");
 
       const inicio = new Date(dataSelecionada);
-      // Boa prática: zerar os segundos e milissegundos para evitar "sujeira" na data
       inicio.setHours(horaI, minutoI, 0, 0);
 
       const fim = new Date(dataSelecionada);
       fim.setHours(horaF, minutoF, 0, 0);
 
-      // Envia a data formatada como string local (ex: "2026-05-18T10:00:00")
-      // Isso impede a conversão para UTC (+3h)
       await criarSlot({
         medicoId,
         dataHoraInicio: format(inicio, "yyyy-MM-dd'T'HH:mm:ss"),
@@ -111,59 +173,21 @@ export default function AgendaMedico() {
       alert("Erro ao criar horário.");
     }
   }
-  async function handleSelectEvent(event) {
-    if (event.status !== "LIVRE") {
-      alert("Somente slots livres podem ser cancelados.");
-      return;
-    }
-
-    const confirmar = window.confirm("Deseja cancelar este horário?");
-
-    if (!confirmar) return;
-
-    try {
-      await cancelarSlot(event.id);
-      await carregarSlots();
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao cancelar.");
-    }
-  }
-
-  function eventStyleGetter(event) {
-    let backgroundColor = "#95a5a6";
-
-    if (event.status === "LIVRE") {
-      backgroundColor = "#2ecc71";
-    }
-
-    if (event.status === "OCUPADO") {
-      backgroundColor = "#3498db";
-    }
-
-    if (event.status === "CANCELADO") {
-      backgroundColor = "#7f8c8d";
-    }
-
-    return {
-      style: {
-        backgroundColor,
-        borderRadius: "8px",
-        border: "none",
-        color: "white",
-        padding: "4px",
-        fontWeight: "600",
-      },
-    };
-  }
 
   return (
     <div className="agenda-container">
       <h1>Minha Agenda</h1>
 
+      {/* Legenda */}
+      <div style={{ display: "flex", gap: 20, marginBottom: 16, fontSize: 14 }}>
+        <span><span style={{ color: "#2ecc71", fontWeight: 700 }}>●</span> Livre</span>
+        <span><span style={{ color: "#3498db", fontWeight: 700 }}>●</span> Ocupado</span>
+        <span><span style={{ color: "#aab7b8", fontWeight: 700 }}>●</span> Cancelado</span>
+      </div>
+
       <Calendar
         localizer={localizer}
-        events={eventos}
+        events={[]} // sem eventos por cima — a cor fica nos bloquinhos
         startAccessor="start"
         endAccessor="end"
         selectable
@@ -183,9 +207,17 @@ export default function AgendaMedico() {
           week: "Semana",
           day: "Dia",
         }}
-        onSelectSlot={handleSelectSlot}
-        onSelectEvent={handleSelectEvent}
-        eventPropGetter={eventStyleGetter}
+        slotPropGetter={slotPropGetter}
+        onSelectSlot={(slotInfo) => {
+          const slot = getSlotDoBloco(slotInfo.start);
+          if (slot) {
+            // clicou num bloco que já tem slot → pergunta se cancela
+            handleClickSlot(slotInfo);
+          } else {
+            // clicou numa área livre → abre modal para criar
+            handleSelectSlot(slotInfo);
+          }
+        }}
       />
 
       {modalAberto && (
@@ -195,7 +227,6 @@ export default function AgendaMedico() {
 
             <div className="campo-modal">
               <label>Horário de início</label>
-
               <input
                 type="time"
                 value={horaInicio}
@@ -205,7 +236,6 @@ export default function AgendaMedico() {
 
             <div className="campo-modal">
               <label>Horário de saída</label>
-
               <input
                 type="time"
                 value={horaFim}
@@ -217,7 +247,6 @@ export default function AgendaMedico() {
               <button className="btn-confirmar" onClick={confirmarCriacao}>
                 Confirmar
               </button>
-
               <button
                 className="btn-cancelar"
                 onClick={() => {
