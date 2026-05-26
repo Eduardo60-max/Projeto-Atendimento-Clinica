@@ -84,7 +84,10 @@
 .consulta-cartao p{
   gap: 5px;
 }
-.consultas-lista{}
+.consultas-lista{
+  display: flex;
+  justify-content: center;
+}
 .consultas-busca{
     background-color: rgba(173, 216, 230, 0.699);
     border-radius: 5px;
