@@ -8,13 +8,13 @@ import {
 } from "react-router-dom";
 import AgendaAtendente from "./pages/agenda/AgendaAtendente";
 import Home from "./pages/home/Home";
-import Login from "./pages/Login/Login";
+import Login from "./pages/Login/login";
 import Medicos from "./pages/medicos/Medicos";
 import Pacientes from "./pages/pacientes/Pacientes";
 import AgendaMedico from "./pages/agenda/AgendaMedico";
 import Funcionarios from "./pages/funcionarios/Funcionarios";
 import Prontuario from "./pages/prontuario/Prontuario";
-import Consultas from "./pages/consultas/Consultas";
+import Consultas from "./pages/consultas/consultas";
 import { useState } from "react";
 import "./App.css";
 
@@ -35,7 +35,7 @@ function Layout({ logado, setLogado, role, setRole }) {
 
     return children;
   }
-  
+
   const page =
     location.pathname === "/"
       ? "home"
@@ -50,16 +50,16 @@ function Layout({ logado, setLogado, role, setRole }) {
           </Link>
 
           {role === "MEDICO" && (
-          <>
-    <Link to="/Agenda" className="navItem">
-      Agenda
-    </Link>
+            <>
+              <Link to="/Agenda" className="navItem">
+                Agenda
+              </Link>
 
-    <Link to="/Consultas" className="navItem">
-      Consultas
-    </Link>
-  </>
-)}
+              <Link to="/Consultas" className="navItem">
+                Consultas
+              </Link>
+            </>
+          )}
 
           {role === "ATENDENTE" && (
             <>
@@ -165,7 +165,7 @@ function Layout({ logado, setLogado, role, setRole }) {
             </RotaPrivada>
           }
         />
-        
+
         {/* Prontuário: Exclusivo para o MEDICO evoluir o paciente */}
         <Route
           path="/prontuario/:consultaId"
