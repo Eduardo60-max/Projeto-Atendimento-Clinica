@@ -4,7 +4,7 @@ import api from "../../api/api";
 import "./Prontuario.css";
 
 const Prontuario = () => {
-  const { consultaId } = useParams(); 
+  const { consultaId } = useParams();
   const navigate = useNavigate();
 
   const [consulta, setConsulta] = useState(null);
@@ -20,10 +20,10 @@ const Prontuario = () => {
       try {
         setLoading(true);
         const response = await api.get(`/prontuarios/consulta/${consultaId}`);
-        
+
         if (response.data) {
           setDescricao(response.data.descricao || "");
-          setConsulta(response.data.consulta); 
+          setConsulta(response.data.consulta);
           setIsEdicao(true);
         }
       } catch (error) {
@@ -61,7 +61,7 @@ const Prontuario = () => {
       };
 
       if (isEdicao) {
-        await api.put(`/prontuarios/consulta/${consultaId}`, payload);
+        await api.post(`/prontuarios`, payload);
       } else {
         await api.post("/prontuarios", payload);
         setIsEdicao(true);
@@ -80,7 +80,9 @@ const Prontuario = () => {
   };
 
   if (loading) {
-    return <div className="loading-container">Carregando dados da consulta...</div>;
+    return (
+      <div className="loading-container">Carregando dados da consulta...</div>
+    );
   }
 
   return (
@@ -91,13 +93,26 @@ const Prontuario = () => {
       {consulta ? (
         <div className="consulta-card">
           <h3>Informações da Consulta</h3>
-          <p><strong>Paciente:</strong> {consulta.paciente?.nome || "Não informado"}</p>
-          <p><strong>Médico:</strong> {consulta.medico?.nome || "Não informado"}</p>
-          <p><strong>Data:</strong> {consulta.data ? new Date(consulta.data).toLocaleDateString('pt-BR') : "Não informada"}</p>
+          <p>
+            <strong>Paciente:</strong>{" "}
+            {consulta.paciente?.nome || "Não informado"}
+          </p>
+          <p>
+            <strong>Médico:</strong> {consulta.medico?.nome || "Não informado"}
+          </p>
+          <p>
+            <strong>Data:</strong>{" "}
+            {consulta.data
+              ? new Date(consulta.data).toLocaleDateString("pt-BR")
+              : "Não informada"}
+          </p>
         </div>
       ) : (
         <div className="consulta-aviso">
-          <p>Aviso: Dados informativos da consulta não foram encontrados, mas você ainda pode salvar o prontuário.</p>
+          <p>
+            Aviso: Dados informativos da consulta não foram encontrados, mas
+            você ainda pode salvar o prontuário.
+          </p>
         </div>
       )}
 
@@ -124,14 +139,10 @@ const Prontuario = () => {
         </div>
 
         <div className="btn-group">
-          <button
-            type="submit"
-            className="btn btn-salvar"
-            disabled={salvando}
-          >
+          <button type="submit" className="btn btn-salvar" disabled={salvando}>
             {salvando ? "Salvando..." : "Salvar Prontuário"}
           </button>
-          
+
           <button
             type="button"
             className="btn btn-voltar"

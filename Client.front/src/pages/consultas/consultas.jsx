@@ -13,7 +13,7 @@ function Consultas() {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 4;
 
-  
+  // const medicoId = 1;
   const medicoId = 1;
 
   useEffect(() => {
@@ -24,9 +24,9 @@ function Consultas() {
     try {
       setCarregando(true);
 
-      const res = await api.get(
-        `/consultas/medico/${medicoId}`,
-      );
+      const res = await api.get(`/consultas/medico/${medicoId}`);
+
+      console.log(res.data);
 
       const unicas = Array.from(
         new Map(res.data.map((c) => [c.id, c])).values(),
@@ -57,13 +57,14 @@ function Consultas() {
     };
   }
 
-  const { dados: consultasPaginadas, totalPaginas } =
-    paginar(filtradas, paginaAtual, itensPorPagina);
+  const { dados: consultasPaginadas, totalPaginas } = paginar(
+    filtradas,
+    paginaAtual,
+    itensPorPagina,
+  );
 
   async function realizarConsulta(id) {
-    const confirmar = window.confirm(
-      "Deseja realizar esta consulta?",
-    );
+    const confirmar = window.confirm("Deseja realizar esta consulta?");
 
     if (!confirmar) return;
 
@@ -77,9 +78,7 @@ function Consultas() {
   }
 
   async function cancelarConsulta(id) {
-    const confirmar = window.confirm(
-      "Deseja cancelar esta consulta?",
-    );
+    const confirmar = window.confirm("Deseja cancelar esta consulta?");
 
     if (!confirmar) return;
 
@@ -104,13 +103,10 @@ function Consultas() {
   }
 
   return (
-    
     <div className="consultas">
       <h1>Consultas</h1>
 
-      <p>
-        Lista de consultas vinculadas ao médico.
-      </p>
+      <p>Lista de consultas vinculadas ao médico.</p>
 
       <input
         type="text"
@@ -135,13 +131,11 @@ function Consultas() {
                 <h2>{c.pacienteNome}</h2>
 
                 <p>
-                  <strong>Data:</strong>{" "}
-                  {formatarData(c.dataHora)}
+                  <strong>Data:</strong> {formatarData(c.slot.dataHoraInicio)}
                 </p>
 
                 <p>
-                  <strong>Hora:</strong>{" "}
-                  {formatarHora(c.dataHora)}
+                  <strong>Hora:</strong> {formatarHora(c.slot.dataHoraInicio)}
                 </p>
 
                 <p>
@@ -154,9 +148,7 @@ function Consultas() {
 
                 <p>
                   <strong>Status:</strong>{" "}
-                  <span
-                    className={`status ${c.status.toLowerCase()}`}
-                  >
+                  <span className={`status ${c.status.toLowerCase()}`}>
                     {c.status}
                   </span>
                 </p>
@@ -166,30 +158,24 @@ function Consultas() {
                     <>
                       <button
                         className="btn-realizar"
-                        onClick={() =>
-                          realizarConsulta(c.id)
-                        }
+                        onClick={() => realizarConsulta(c.id)}
                       >
                         Realizar
                       </button>
 
                       <button
                         className="btn-cancelar"
-                        onClick={() =>
-                          cancelarConsulta(c.id)
-                        }
+                        onClick={() => cancelarConsulta(c.id)}
                       >
                         Cancelar
                       </button>
                     </>
                   )}
 
-                  {c.status === "realizada" && (
+                  {c.status === "REALIZADO" && (
                     <button
                       className="btn-prontuario"
-                      onClick={() =>
-                        navigate(`/prontuario/${c.id}`)
-                      }
+                      onClick={() => navigate(`/prontuario/${c.id}`)}
                     >
                       Ver Prontuário
                     </button>
@@ -203,9 +189,7 @@ function Consultas() {
 
       <div className="paginacao">
         <button
-          onClick={() =>
-            setPaginaAtual((p) => Math.max(p - 1, 1))
-          }
+          onClick={() => setPaginaAtual((p) => Math.max(p - 1, 1))}
           disabled={paginaAtual === 1}
         >
           Anterior
@@ -216,15 +200,8 @@ function Consultas() {
         </span>
 
         <button
-          onClick={() =>
-            setPaginaAtual((p) =>
-              Math.min(p + 1, totalPaginas),
-            )
-          }
-          disabled={
-            paginaAtual === totalPaginas ||
-            totalPaginas === 0
-          }
+          onClick={() => setPaginaAtual((p) => Math.min(p + 1, totalPaginas))}
+          disabled={paginaAtual === totalPaginas || totalPaginas === 0}
         >
           Próxima
         </button>
