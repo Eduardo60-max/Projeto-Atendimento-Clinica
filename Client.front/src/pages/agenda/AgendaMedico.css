@@ -79,7 +79,7 @@
 }
 
 .btn-confirmar {
-  background: #2ecc71;
+  background: #2ddbd8;
   border: none;
   color: white;
 
@@ -90,7 +90,7 @@
 }
 
 .btn-confirmar:hover {
-  background: #27ae60;
+  background: #0ee90e;
 }
 
 .btn-cancelar {

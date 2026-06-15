@@ -155,7 +155,9 @@
   font-weight: 600;
   color: #2c3e50;
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .btn-confirmar:hover:not(:disabled) {
@@ -183,4 +185,18 @@
 
 .btn-cancelar:hover {
   background: #b1b1b1;
+}
+
+.rbc-day-bg:hover {
+  background-color: #d6ecff;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.rbc-time-slot {
+  transition: 0.2s;
+}
+
+.rbc-time-slot:hover {
+  background-color: #eef7ff;
 }
