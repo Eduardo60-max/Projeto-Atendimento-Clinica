@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.clinica.clinica_backend.dto.LoginDto;
+import com.clinica.clinica_backend.model.Enfermeiro;
 import com.clinica.clinica_backend.model.Funcionario;
 import com.clinica.clinica_backend.model.Medico;
+import com.clinica.clinica_backend.service.EnfermeiroService;
 import com.clinica.clinica_backend.service.FuncionarioService;
 import com.clinica.clinica_backend.service.JwtService;
 import com.clinica.clinica_backend.service.MedicoService;
@@ -25,15 +27,18 @@ public class AutenticationController {
 
     private final MedicoService medicoService;
     private final FuncionarioService funcionarioService;
+    private final EnfermeiroService enfermeiroService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
     public AutenticationController(MedicoService medicoService,
             FuncionarioService funcionarioService,
+            EnfermeiroService enfermeiroService,
             JwtService jwtService,
             PasswordEncoder passwordEncoder) {
         this.medicoService = medicoService;
         this.funcionarioService = funcionarioService;
+        this.enfermeiroService = enfermeiroService;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -43,13 +48,10 @@ public class AutenticationController {
 
         if ("MEDICO".equalsIgnoreCase(dto.getTipo())) {
             try {
-
                 Medico medico = medicoService.buscarPorCrm(dto.getIdentificador());
 
                 boolean senhaCorreta = passwordEncoder.matches(dto.getSenha(), medico.getSenha());
-
                 if (!senhaCorreta) {
-
                     return ResponseEntity.status(401).body("Credenciais inválidas");
                 }
 
@@ -72,7 +74,6 @@ public class AutenticationController {
                 Funcionario funcionario = funcionarioService.buscarPorCpf(dto.getIdentificador());
 
                 boolean senhaCorreta = passwordEncoder.matches(dto.getSenha(), funcionario.getSenha());
-
                 if (!senhaCorreta) {
                     return ResponseEntity.status(401).body("Credenciais inválidas");
                 }
@@ -92,8 +93,32 @@ public class AutenticationController {
                 return ResponseEntity.status(401).body("Credenciais inválidas");
             }
 
+        } else if ("ENFERMEIRO".equalsIgnoreCase(dto.getTipo())) {
+            try {
+
+                Enfermeiro enfermeiro = enfermeiroService.buscarPorCoren(dto.getIdentificador());
+
+                boolean senhaCorreta = passwordEncoder.matches(dto.getSenha(), enfermeiro.getSenha());
+                if (!senhaCorreta) {
+                    return ResponseEntity.status(401).body("Credenciais inválidas");
+                }
+
+                String token = jwtService.gerarToken(
+                        enfermeiro.getId(), enfermeiro.getNome(), "ENFERMEIRO");
+
+                Map<String, Object> resposta = new HashMap<>();
+                resposta.put("token", token);
+                resposta.put("role", "ENFERMEIRO");
+                resposta.put("nome", enfermeiro.getNome());
+
+                return ResponseEntity.ok(resposta);
+
+            } catch (RuntimeException e) {
+                return ResponseEntity.status(401).body("Credenciais inválidas");
+            }
+
         } else {
-            return ResponseEntity.badRequest().body("Tipo inválido. Use MEDICO ou ATENDENTE.");
+            return ResponseEntity.badRequest().body("Tipo inválido. Use MEDICO, ATENDENTE ou ENFERMEIRO.");
         }
     }
 }
