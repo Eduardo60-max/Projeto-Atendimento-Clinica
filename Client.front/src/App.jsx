@@ -15,8 +15,22 @@ import AgendaMedico from "./pages/agenda/AgendaMedico";
 import Funcionarios from "./pages/funcionarios/Funcionarios";
 import Prontuario from "./pages/prontuario/Prontuario";
 import Consultas from "./pages/consultas/consultas";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import "./App.css";
+
+function PageTransition({ children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 function Layout({ logado, setLogado, role, setRole }) {
   const location = useLocation();
@@ -50,16 +64,15 @@ function Layout({ logado, setLogado, role, setRole }) {
           </Link>
 
           {role === "MEDICO" && (
-            <>
-              <Link to="/Agenda" className="navItem">
-                Agenda
-              </Link>
-
-              <Link to="/Consultas" className="navItem">
-                Consultas
-              </Link>
-            </>
-          )}
+              <>
+                        <Link to="/Agenda" className="navItem">
+                          Agenda
+                        </Link>
+                        <Link to="/Consultas" className="navItem">
+                          Consultas
+                        </Link>
+                      </>
+                    )}
 
           {role === "ATENDENTE" && (
             <>
@@ -90,92 +103,110 @@ function Layout({ logado, setLogado, role, setRole }) {
         </nav>
       )}
 
-      <Routes>
-        <Route
-          path="/Login"
-          element={
-            logado ? (
-              <Navigate to={role === "MEDICO" ? "/Agenda" : "/"} />
-            ) : (
-              <Login setLogado={setLogado} setRole={setRole} />
-            )
-          }
-        />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route
+            path="/Login"
+            element={
+              logado ? (
+                <Navigate to={role === "MEDICO" ? "/Agenda" : "/"} />
+              ) : (
+                <PageTransition>
+                  <Login setLogado={setLogado} setRole={setRole} />
+                </PageTransition>
+              )
+            }
+          />
 
-        <Route
-          path="/"
-          element={
-            <RotaPrivada logado={logado} setLogado={setLogado}>
-              <Home />
-            </RotaPrivada>
-          }
-        />
+          <Route
+            path="/"
+            element={
+              <RotaPrivada>
+                <PageTransition>
+                  <Home />
+                </PageTransition>
+              </RotaPrivada>
+            }
+          />
 
-        <Route
-          path="/Agenda"
-          element={
-            <RotaPrivada rolePermitido="MEDICO">
-              <AgendaMedico />
-            </RotaPrivada>
-          }
-        />
+          <Route
+            path="/Agenda"
+            element={
+              <RotaPrivada rolePermitido="MEDICO">
+                <PageTransition>
+                  <AgendaMedico />
+                </PageTransition>
+              </RotaPrivada>
+            }
+          />
 
-        <Route
-          path="/AgendaMedicos"
-          element={
-            <RotaPrivada rolePermitido="ATENDENTE">
-              <AgendaAtendente />
-            </RotaPrivada>
-          }
-        />
+          <Route
+            path="/AgendaMedicos"
+            element={
+              <RotaPrivada rolePermitido="ATENDENTE">
+                <PageTransition>
+                  <AgendaAtendente />
+                </PageTransition>
+              </RotaPrivada>
+            }
+          />
 
-        <Route
-          path="/Medicos"
-          element={
-            <RotaPrivada rolePermitido="ATENDENTE">
-              <Medicos />
-            </RotaPrivada>
-          }
-        />
+          <Route
+            path="/Medicos"
+            element={
+              <RotaPrivada rolePermitido="ATENDENTE">
+                <PageTransition>
+                  <Medicos />
+                </PageTransition>
+              </RotaPrivada>
+            }
+          />
 
-        <Route
-          path="/Pacientes"
-          element={
-            <RotaPrivada rolePermitido="ATENDENTE">
-              <Pacientes />
-            </RotaPrivada>
-          }
-        />
+          <Route
+            path="/Pacientes"
+            element={
+              <RotaPrivada rolePermitido="ATENDENTE">
+                <PageTransition>
+                  <Pacientes />
+                </PageTransition>
+              </RotaPrivada>
+            }
+          />
 
-        <Route
-          path="/Consultas"
-          element={
-            <RotaPrivada rolePermitido="MEDICO">
-              <Consultas />
-            </RotaPrivada>
-          }
-        />
+          <Route
+            path="/Consultas"
+            element={
+              <RotaPrivada rolePermitido="MEDICO">
+                <PageTransition>
+                  <Consultas />
+                </PageTransition>
+              </RotaPrivada>
+            }
+          />
 
-        {/* Tela de cadastro de Funcionários: Desenhada para o ATENDENTE gerenciar */}
-        <Route
-          path="/Funcionarios"
-          element={
-            <RotaPrivada rolePermitido="ATENDENTE">
-              <Funcionarios />
-            </RotaPrivada>
-          }
-        />
+          <Route
+            path="/Funcionarios"
+            element={
+              <RotaPrivada rolePermitido="ATENDENTE">
+                <PageTransition>
+                  <Funcionarios />
+                </PageTransition>
+              </RotaPrivada>
+            }
+          />
 
-        {/* Prontuário: Exclusivo para o MEDICO evoluir o paciente */}
-        <Route
-          path="/prontuario/:consultaId"
-          element={
-            <RotaPrivada rolePermitido="MEDICO">
-              <Prontuario />
-            </RotaPrivada>
-          }
-        />
-      </Routes>
+          <Route
+            path="/prontuario/:consultaId"
+            element={
+              <RotaPrivada rolePermitido="MEDICO">
+                <PageTransition>
+                  <Prontuario />
+                </PageTransition>
+              </RotaPrivada>
+            }
+          />
+        </Routes>
+      </AnimatePresence>
     </div>
   );
 }
