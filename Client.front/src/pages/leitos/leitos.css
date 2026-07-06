@@ -1,0 +1,115 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.leitos {
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.leitos-topo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.btn-voltar {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 12px;
+  background: #4aa8e0;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-voltar:hover {
+  background: #3690c9;
+}
+
+.leitos h1 {
+  font-family: "Inter Tight", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 40px;
+  color: #4aa8e0;
+  margin-bottom: 8px;
+}
+
+.leitos > p {
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.leitos-busca {
+  width: 100%;
+  padding: 10px 14px;
+  margin: 0 0 24px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+}
+
+.leitos-lista {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.leito-cartao {
+  background: white;
+  padding: 15px;
+  width: 260px;
+  border-radius: 12px;
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.leito-cartao h2 {
+  margin-bottom: 10px;
+  color: #4aa8e0;
+  font-family: "Merriweather Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 18px;
+}
+
+.leito-cartao p {
+  font-size: 14px;
+  color: #333;
+  margin: 4px 0;
+}
+
+.leitos-erro {
+  color: #c0392b;
+}
+
+.paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.paginacao button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 12px;
+  background: #4aa8e0;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.paginacao button:disabled {
+  background: #bfe0f2;
+  cursor: not-allowed;
+}

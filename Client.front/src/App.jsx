@@ -14,6 +14,7 @@ import Pacientes from "./pages/pacientes/Pacientes";
 import AgendaMedico from "./pages/agenda/AgendaMedico";
 import Funcionarios from "./pages/funcionarios/Funcionarios";
 import Prontuario from "./pages/prontuario/Prontuario";
+import Leitos from "./pages/leitos/Leitos";
 import Consultas from "./pages/consultas/consultas";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
@@ -139,7 +140,15 @@ function Layout({ logado, setLogado, role, setRole }) {
               </RotaPrivada>
             }
           />
-
+          
+           <Route
+             path="/Leitos"
+             element={
+             <RotaPrivada>
+             <Leitos />
+             </RotaPrivada>
+          }
+           />
           <Route
             path="/AgendaMedicos"
             element={
