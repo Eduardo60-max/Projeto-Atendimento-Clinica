@@ -1,4 +1,4 @@
-import "./consultas.css";
+import "./Consultas.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
@@ -13,7 +13,6 @@ function Consultas() {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 4;
 
-  
   const medicoId = 1;
 
   useEffect(() => {
@@ -24,30 +23,32 @@ function Consultas() {
     try {
       setCarregando(true);
 
-      const res = await api.get(
-        `/consultas/medico/${medicoId}`,
-      );
+      const res = await api.get(`/consultas/medico/${medicoId}`);
 
       const unicas = Array.from(
-        new Map(res.data.map((c) => [c.id, c])).values(),
+        new Map(res.data.map((c) => [c.id, c])).values()
       );
 
       setConsultas(unicas);
     } catch (err) {
-      console.error("erro ao carregar consultas:", err);
+      console.error("Erro ao carregar consultas:", err);
     } finally {
       setCarregando(false);
     }
   }
 
-  const filtradas = consultas.filter(
-    (c) =>
-      c.pacienteNome
-        .toLowerCase()
-        .includes(busca.toLowerCase()) ||
-      c.tipo.toLowerCase().includes(busca.toLowerCase()) ||
-      c.status.toLowerCase().includes(busca.toLowerCase()),
-  );
+  const filtradas = consultas.filter((c) => {
+    const paciente = (c.paciente?.nome || "").toLowerCase();
+    const tipo = (c.tipo || "").toLowerCase();
+    const status = (c.status || "").toLowerCase();
+    const texto = busca.toLowerCase();
+
+    return (
+      paciente.includes(texto) ||
+      tipo.includes(texto) ||
+      status.includes(texto)
+    );
+  });
 
   function paginar(lista, paginaAtual, itensPorPagina) {
     const inicio = (paginaAtual - 1) * itensPorPagina;
@@ -63,15 +64,10 @@ function Consultas() {
     paginar(filtradas, paginaAtual, itensPorPagina);
 
   async function realizarConsulta(id) {
-    const confirmar = window.confirm(
-      "Deseja realizar esta consulta?",
-    );
-
-    if (!confirmar) return;
+    if (!window.confirm("Deseja realizar esta consulta?")) return;
 
     try {
       await api.put(`/consultas/${id}/realizar`);
-
       carregarConsultas();
     } catch (err) {
       console.error("Erro ao realizar consulta:", err);
@@ -79,15 +75,10 @@ function Consultas() {
   }
 
   async function cancelarConsulta(id) {
-    const confirmar = window.confirm(
-      "Deseja cancelar esta consulta?",
-    );
-
-    if (!confirmar) return;
+    if (!window.confirm("Deseja cancelar esta consulta?")) return;
 
     try {
       await api.put(`/consultas/${id}/cancelar`);
-
       carregarConsultas();
     } catch (err) {
       console.error("Erro ao cancelar consulta:", err);
@@ -109,9 +100,7 @@ function Consultas() {
     <div className="consultas">
       <h1>Consultas</h1>
 
-      <p>
-        Lista de consultas vinculadas ao médico.
-      </p>
+      <p>Lista de consultas vinculadas ao médico.</p>
 
       <input
         type="text"
@@ -133,16 +122,16 @@ function Consultas() {
           ) : (
             consultasPaginadas.map((c) => (
               <div key={c.id} className="consulta-cartao">
-                <h2>{c.pacienteNome}</h2>
+                <h2>{c.paciente?.nome}</h2>
 
                 <p>
                   <strong>Data:</strong>{" "}
-                  {formatarData(c.dataHora)}
+                  {formatarData(c.slot?.dataHoraInicio)}
                 </p>
 
                 <p>
                   <strong>Hora:</strong>{" "}
-                  {formatarHora(c.dataHora)}
+                  {formatarHora(c.slot?.dataHoraInicio)}
                 </p>
 
                 <p>
@@ -150,14 +139,12 @@ function Consultas() {
                 </p>
 
                 <p>
-                  <strong>Preço:</strong> R$ {c.preco}
+                  <strong>Preço:</strong> R$ {Number(c.preco).toFixed(2)}
                 </p>
 
                 <p>
                   <strong>Status:</strong>{" "}
-                  <span
-                    className={`status ${c.status.toLowerCase()}`}
-                  >
+                  <span className={`status ${c.status.toLowerCase()}`}>
                     {c.status}
                   </span>
                 </p>
@@ -167,30 +154,24 @@ function Consultas() {
                     <>
                       <button
                         className="btn-realizar"
-                        onClick={() =>
-                          realizarConsulta(c.id)
-                        }
+                        onClick={() => realizarConsulta(c.id)}
                       >
                         Realizar
                       </button>
 
                       <button
                         className="btn-cancelar"
-                        onClick={() =>
-                          cancelarConsulta(c.id)
-                        }
+                        onClick={() => cancelarConsulta(c.id)}
                       >
                         Cancelar
                       </button>
                     </>
                   )}
 
-                  {c.status === "realizada" && (
+                  {c.status === "REALIZADO" && (
                     <button
                       className="btn-prontuario"
-                      onClick={() =>
-                        navigate(`/prontuario/${c.id}`)
-                      }
+                      onClick={() => navigate(`/prontuario/${c.id}`)}
                     >
                       Ver Prontuário
                     </button>
@@ -218,9 +199,7 @@ function Consultas() {
 
         <button
           onClick={() =>
-            setPaginaAtual((p) =>
-              Math.min(p + 1, totalPaginas),
-            )
+            setPaginaAtual((p) => Math.min(p + 1, totalPaginas))
           }
           disabled={
             paginaAtual === totalPaginas ||
